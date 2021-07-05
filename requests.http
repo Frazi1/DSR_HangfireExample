@@ -1,0 +1,11 @@
+POST http://{{apiUrl}}/Enqueue/CreateSendEmailJob?to="dmitry.vychikov@gmail.com"
+Content-Type: application/json
+
+"Welcome to Hangfire DEMO!"
+###
+
+
+POST http://{{apiUrl}}/Enqueue/CreateFailingSendEmailJob?to="dmitry.vychikov@gmail.com"
+Content-Type: application/json
+
+"Failing job for Hangfire DEMO!"

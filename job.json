@@ -1,0 +1,36 @@
+[
+  {
+    "Id": 1,
+    "StateId": 3,
+    "StateName": "Succeeded",
+    "InvocationData": {
+      "Type": "DSR_HangfireExample.EmailService, DSR_HangfireExample, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "Method": "\"SendEmail\"",
+      "ParameterTypes": [
+        "System.String, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
+        "System.String, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e"
+      ],
+      "Arguments": null
+    },
+    "Arguments": ["dmitry.vychikov@gmail.com", "Welcome to Hangfire DEMO!"],
+    "CreatedAt": "2021-07-05 12:56:57.890",
+    "ExpireAt": "2021-07-06 12:56:58.413"
+  },
+  {
+    "Id": 1,
+    "StateId": 3,
+    "StateName": "Succeeded",
+    "InvocationData": {
+      "Type": "DSR_HangfireExample.EmailService, DSR_HangfireExample",
+      "Method": "SendEmail",
+      "ParameterTypes": [
+        "System.String",
+        "System.String"
+      ],
+      "Arguments": null
+    },
+    "Arguments": ["dmitry.vychikov@gmail.com", "Welcome to Hangfire DEMO!"],
+    "CreatedAt": "2021-07-05 12:56:57.890",
+    "ExpireAt": "2021-07-06 12:56:58.413"
+  }
+]
