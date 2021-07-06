@@ -55,6 +55,11 @@ namespace DSR_HangfireExample
             services.AddSingleton<EmailService>();
             services.AddSingleton<EmailLogic>();
             services.AddSingleton<ClientEmailJobs>();
+
+            services.Decorate<IRecurringJobManager, RecurringJobCleanupManager>();
+            services.AddSingleton(provider =>
+                (IRecurringJobCleanupManager) provider.GetRequiredService<IRecurringJobManager>()
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,13 +83,15 @@ namespace DSR_HangfireExample
                 Authorization = new List<IDashboardAuthorizationFilter>()
             });
 
-            IRecurringJobManager recurringJobManager = app.ApplicationServices
-                .GetRequiredService<IRecurringJobManager>();
+            var recurringJobManager = app.ApplicationServices
+                .GetRequiredService<IRecurringJobCleanupManager>();
 
             recurringJobManager.AddOrUpdate<ClientEmailJobs>(
                 "SendEmailToAllClients",
                 x => x.CreateEmailClientJobs(),
                 Cron.Minutely);
+
+            recurringJobManager.RemoveOutdatedJobs();
         }
     }
 }
