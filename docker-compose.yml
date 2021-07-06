@@ -10,6 +10,7 @@ services:
       - "5001:443"
     depends_on:
       - db
+      - elasticsearch
   db:
     build: ./db
     ports:
@@ -19,3 +20,17 @@ services:
       ACCEPT_EULA: "Y"
     volumes:
       - ./db/data:/var/opt/mssql/data
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.2
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.13.2
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
