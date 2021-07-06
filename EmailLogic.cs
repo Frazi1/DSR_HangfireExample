@@ -12,6 +12,7 @@ namespace DSR_HangfireExample
             => Enumerable.Range(1, 10).ToArray();
 
         [JobDisplayName("Send email to client {0}")]
+        [JobExpiration(365)]
         public void SendClientEmail(int clientId)
         {
             _service.SendEmail($"client_{clientId}@some.com",
