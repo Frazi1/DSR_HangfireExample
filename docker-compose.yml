@@ -9,9 +9,10 @@ services:
       - "5000:80"
       - "5001:443"
     depends_on:
-      - db
+      - sql_db
+      - postgres_db
       - elasticsearch
-  db:
+  sql_db:
     build: ./db
     ports:
       - "1433:1433"
@@ -20,6 +21,13 @@ services:
       ACCEPT_EULA: "Y"
     volumes:
       - ./db/data:/var/opt/mssql/data
+  postgres_db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "test"
+      POSTGRES_DB: "hangfire"
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.13.2
     ports:

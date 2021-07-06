@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Dashboard;
+using Hangfire.PostgreSql;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,7 +28,20 @@ namespace DSR_HangfireExample
             WebHostEnvironment = webHostEnvironment;
         }
 
-        private string DbHost => WebHostEnvironment.EnvironmentName == "Docker" ? "db" :"localhost";
+        private static string GetConnectionString(string server, string database, string user, string password)
+        {
+            DbConnectionStringBuilder connectionStringBuilder = new()
+            {
+                ["Server"] = server,
+                ["Database"] = database,
+                ["User ID"] = user,
+                ["Password"] = password
+            };
+            return connectionStringBuilder.ConnectionString;
+        }
+        
+        private string SqlDbHost => WebHostEnvironment.EnvironmentName == "Docker" ? "sql_db" :"localhost";
+        private string PostgresDbHost => WebHostEnvironment.EnvironmentName == "Docker" ? "postgres_db" :"localhost";
         private string ElasticSearchHost => WebHostEnvironment.EnvironmentName == "Docker" ? "elasticsearch" :"localhost";
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -51,20 +65,20 @@ namespace DSR_HangfireExample
                 });
             });
             
-            DbConnectionStringBuilder connectionStringBuilder = new()
-            {
-                ["Server"] = DbHost,
-                ["Database"] ="hangfire",
-                ["User ID"] = "sa",
-                ["Password"] = "Your_password123"
-            };
-
             services.AddSingleton<JobActivator, CustomJobActivator>();
             services.AddHangfire(configuration =>
             {
                 configuration
                     .UseSqlServerStorage(
-                        () => new Microsoft.Data.SqlClient.SqlConnection(connectionStringBuilder.ConnectionString))
+                        () => new Microsoft.Data.SqlClient.SqlConnection(
+                            GetConnectionString(SqlDbHost, "hangfire", "sa", "Your_password123")),
+                        new SqlServerStorageOptions())
+                    //Uncomment to use Postgre Storage
+                    // .UsePostgreSqlStorage(GetConnectionString(PostgresDbHost, "hangfire", "postgres", "test"),
+                    //     new PostgreSqlStorageOptions
+                    //     {
+                    //         InvisibilityTimeout = TimeSpan.FromHours(2)
+                    //     })
                     .UseSimpleAssemblyNameTypeSerializer()
                     ;
 
@@ -80,6 +94,7 @@ namespace DSR_HangfireExample
             services.AddSingleton<EmailService>();
             services.AddSingleton<EmailLogic>();
             services.AddSingleton<ClientEmailJobs>();
+            services.AddSingleton<LongRunningJobs>();
 
             services.Decorate<IRecurringJobManager, RecurringJobCleanupManager>();
             services.AddSingleton(provider =>
@@ -115,6 +130,11 @@ namespace DSR_HangfireExample
                 "SendEmailToAllClients",
                 x => x.CreateEmailClientJobs(),
                 Cron.Minutely);
+            
+            recurringJobManager.AddOrUpdate<LongRunningJobs>(
+                "LongRunningJob",
+                x => x.DelayJob(TimeSpan.FromSeconds(30)),
+                Cron.Never);
 
             recurringJobManager.RemoveOutdatedJobs();
         }
