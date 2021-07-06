@@ -59,6 +59,7 @@ namespace DSR_HangfireExample
                 ["Password"] = "Your_password123"
             };
 
+            services.AddSingleton<JobActivator, CustomJobActivator>();
             services.AddHangfire(configuration =>
             {
                 configuration
