@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -18,6 +17,7 @@ using Hangfire.Tags.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -28,29 +28,16 @@ namespace DSR_HangfireExample
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
         public IWebHostEnvironment WebHostEnvironment { get; }
 
-        public Startup(IWebHostEnvironment webHostEnvironment)
+        public Startup(IConfiguration configuration,
+            IWebHostEnvironment webHostEnvironment)
         {
+            Configuration = configuration;
             WebHostEnvironment = webHostEnvironment;
         }
-
-        private static string GetConnectionString(string server, string database, string user, string password)
-        {
-            DbConnectionStringBuilder connectionStringBuilder = new()
-            {
-                ["Server"] = server,
-                ["Database"] = database,
-                ["User ID"] = user,
-                ["Password"] = password
-            };
-            return connectionStringBuilder.ConnectionString;
-        }
         
-        private string SqlDbHost => WebHostEnvironment.EnvironmentName == "Docker" ? "sql_db" :"localhost";
-        private string PostgresDbHost => WebHostEnvironment.EnvironmentName == "Docker" ? "postgres_db" :"localhost";
-        private string ElasticSearchHost => WebHostEnvironment.EnvironmentName == "Docker" ? "elasticsearch" :"localhost";
-
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -62,7 +49,7 @@ namespace DSR_HangfireExample
                 
                 var loggerConfiguration = new LoggerConfiguration()
                     .MinimumLevel.Verbose()
-                    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri($"http://{ElasticSearchHost}:9200"))
+                    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(Configuration["ElasticSearchUrl"]))
                     {
                         AutoRegisterTemplate = true,
                         IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower()}-{DateTime.UtcNow:yyyy-MM}"
@@ -80,14 +67,13 @@ namespace DSR_HangfireExample
             services.AddHangfire(configuration =>
             {
                 configuration
-                    .UseSqlServerStorage(
-                        () => new Microsoft.Data.SqlClient.SqlConnection(
-                            GetConnectionString(SqlDbHost, "hangfire", "sa", "Your_password123")),
+                    .UseSqlServerStorage(() =>
+                            new Microsoft.Data.SqlClient.SqlConnection(Configuration.GetConnectionString("SqlServer")),
                         new SqlServerStorageOptions())
                     .UseTagsWithSql()
-                   
-                    //Uncomment to use Postgre Storage
-                    // .UsePostgreSqlStorage(GetConnectionString(PostgresDbHost, "hangfire", "postgres", "test"),
+
+                    // Uncomment to use Postgre Storage
+                    // .UsePostgreSqlStorage(Configuration.GetConnectionString("Postgre"),
                     //     new PostgreSqlStorageOptions
                     //     {
                     //         InvisibilityTimeout = TimeSpan.FromHours(2)
