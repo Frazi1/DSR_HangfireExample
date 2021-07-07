@@ -4,6 +4,8 @@ using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using DSR_HangfireExample.HangfireExtensions;
+using DSR_HangfireExample.Jobs;
 using Hangfire;
 using Hangfire.Console;
 using Hangfire.Console.Extensions;

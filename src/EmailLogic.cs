@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using DSR_HangfireExample.HangfireExtensions;
 using Hangfire;
 
 namespace DSR_HangfireExample

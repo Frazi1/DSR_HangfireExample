@@ -4,7 +4,7 @@ using Hangfire.Console;
 using Hangfire.Console.Extensions;
 using Microsoft.Extensions.Logging;
 
-namespace DSR_HangfireExample
+namespace DSR_HangfireExample.Jobs
 {
     public class ProgressJobs
     {

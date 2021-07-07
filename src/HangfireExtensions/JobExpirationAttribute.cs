@@ -3,7 +3,7 @@ using Hangfire.Common;
 using Hangfire.States;
 using Hangfire.Storage;
 
-namespace DSR_HangfireExample
+namespace DSR_HangfireExample.HangfireExtensions
 {
     public class JobExpirationAttribute : JobFilterAttribute, IApplyStateFilter
     {

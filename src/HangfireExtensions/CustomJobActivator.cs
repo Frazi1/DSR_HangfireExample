@@ -3,7 +3,7 @@ using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace DSR_HangfireExample
+namespace DSR_HangfireExample.HangfireExtensions
 {
     public class CustomJobActivatorScope : JobActivatorScope
     {

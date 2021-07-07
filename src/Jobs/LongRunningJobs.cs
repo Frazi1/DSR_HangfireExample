@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace DSR_HangfireExample
+namespace DSR_HangfireExample.Jobs
 {
     public class LongRunningJobs
     {

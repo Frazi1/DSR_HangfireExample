@@ -1,10 +1,8 @@
-using System;
-using System.Runtime.InteropServices.ComTypes;
 using System.Transactions;
 using Hangfire;
 using Hangfire.States;
 
-namespace DSR_HangfireExample
+namespace DSR_HangfireExample.Jobs
 {
     public class ClientEmailJobs
     {

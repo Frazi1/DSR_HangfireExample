@@ -1,11 +1,10 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Hangfire;
 using Hangfire.Common;
 using Hangfire.Storage;
 
-namespace DSR_HangfireExample
+namespace DSR_HangfireExample.HangfireExtensions
 {
     public interface IRecurringJobCleanupManager : IRecurringJobManager
     {
