@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Hangfire;
+using Hangfire.Console;
+using Hangfire.Console.Extensions;
 using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
 using Hangfire.SqlServer;
@@ -51,6 +53,8 @@ namespace DSR_HangfireExample
             services.AddControllers();
             services.AddLogging(builder =>
             {
+                builder.ClearProviders();
+                
                 var loggerConfiguration = new LoggerConfiguration()
                     .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri($"http://{ElasticSearchHost}:9200"))
                     {
@@ -66,6 +70,7 @@ namespace DSR_HangfireExample
             });
             
             services.AddSingleton<JobActivator, CustomJobActivator>();
+            services.AddHangfireConsoleExtensions();
             services.AddHangfire(configuration =>
             {
                 configuration
@@ -80,6 +85,7 @@ namespace DSR_HangfireExample
                     //         InvisibilityTimeout = TimeSpan.FromHours(2)
                     //     })
                     .UseSimpleAssemblyNameTypeSerializer()
+                    .UseConsole()
                     ;
 
                 var retryFilter = GlobalJobFilters.Filters
@@ -103,6 +109,7 @@ namespace DSR_HangfireExample
             services.AddSingleton<EmailLogic>();
             services.AddSingleton<ClientEmailJobs>();
             services.AddSingleton<LongRunningJobs>();
+            services.AddSingleton<ProgressJobs>();
 
             services.Decorate<IRecurringJobManager, RecurringJobCleanupManager>();
             services.AddSingleton(provider =>
@@ -143,6 +150,11 @@ namespace DSR_HangfireExample
                 "LongRunningJob",
                 x => x.DelayJob(TimeSpan.FromSeconds(30)),
                 Cron.Never);
+            
+            recurringJobManager.AddOrUpdate<ProgressJobs>(
+                "ArrayProcessingJob",
+                x => x.ArrayProcessingJob(10),
+                "*/2 * * * *");
 
             recurringJobManager.RemoveOutdatedJobs();
         }
