@@ -58,6 +58,7 @@ namespace DSR_HangfireExample
                 builder.ClearProviders();
                 
                 var loggerConfiguration = new LoggerConfiguration()
+                    .MinimumLevel.Verbose()
                     .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri($"http://{ElasticSearchHost}:9200"))
                     {
                         AutoRegisterTemplate = true,
