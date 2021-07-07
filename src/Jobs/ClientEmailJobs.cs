@@ -1,6 +1,7 @@
 using System.Transactions;
 using Hangfire;
 using Hangfire.States;
+using Hangfire.Tags.Attributes;
 
 namespace DSR_HangfireExample.Jobs
 {
@@ -17,6 +18,8 @@ namespace DSR_HangfireExample.Jobs
         }
 
         private static bool IsImportantClient(int clientId) => clientId % 2 == 1;
+        
+        [Tag("email-jobs-generator")]
         public void CreateEmailClientJobs()
         {
             int[] clients = _logic.GetActiveClients();

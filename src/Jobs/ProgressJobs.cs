@@ -1,7 +1,9 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using Hangfire.Console;
 using Hangfire.Console.Extensions;
+using Hangfire.Tags.Attributes;
 using Microsoft.Extensions.Logging;
 
 namespace DSR_HangfireExample.Jobs
@@ -18,6 +20,9 @@ namespace DSR_HangfireExample.Jobs
             _logger = logger;
             _performingContextAccessor = performingContextAccessor;
         }
+        
+        [Tag("array-processing") ,Tag("array-processing-job-{0}")]
+	    [JobDisplayName("ArrayProcessingJob-{0}")]
         public async Task ArrayProcessingJob(int count)
         {
             _logger.LogInformation("Started processing array of items");

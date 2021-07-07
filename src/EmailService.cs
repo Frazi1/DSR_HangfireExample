@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Hangfire;
+using Hangfire.Tags.Attributes;
 using Microsoft.Extensions.Logging;
 
 namespace DSR_HangfireExample

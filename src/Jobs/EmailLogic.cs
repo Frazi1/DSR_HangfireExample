@@ -2,9 +2,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using DSR_HangfireExample.HangfireExtensions;
 using Hangfire;
+using Hangfire.Tags.Attributes;
 
-namespace DSR_HangfireExample
+namespace DSR_HangfireExample.Jobs
 {
+    [Tag("email-jobs")]
     public class EmailLogic
     {
         private readonly EmailService _service;
@@ -15,6 +17,7 @@ namespace DSR_HangfireExample
 
         [JobDisplayName("Send email to client {0}")]
         [JobExpiration(365)]
+        [Tag("email-client-{0}")]
         public async Task SendClientEmail(int clientId)
         {
             await _service.SendEmail($"client_{clientId}@some.com",

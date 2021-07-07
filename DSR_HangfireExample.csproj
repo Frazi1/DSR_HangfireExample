@@ -11,6 +11,8 @@
       <PackageReference Include="Hangfire.Console.Extensions" Version="1.0.4" />
       <PackageReference Include="Hangfire.PostgreSql" Version="1.8.5.3" />
       <PackageReference Include="Hangfire.SqlServer" Version="1.7.24" />
+      <PackageReference Include="Hangfire.Tags.PostgreSql" Version="1.8.0" />
+      <PackageReference Include="Hangfire.Tags.SqlServer" Version="1.7.1" />
       <PackageReference Include="Microsoft.Data.SqlClient" Version="3.0.0" />
       <PackageReference Include="Scrutor" Version="3.3.0" />
       <PackageReference Include="Seq.Extensions.Logging" Version="6.0.0" />

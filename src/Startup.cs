@@ -12,6 +12,9 @@ using Hangfire.Console.Extensions;
 using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
 using Hangfire.SqlServer;
+using Hangfire.Tags;
+using Hangfire.Tags.PostgreSql;
+using Hangfire.Tags.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -81,12 +84,15 @@ namespace DSR_HangfireExample
                         () => new Microsoft.Data.SqlClient.SqlConnection(
                             GetConnectionString(SqlDbHost, "hangfire", "sa", "Your_password123")),
                         new SqlServerStorageOptions())
+                    .UseTagsWithSql()
+                   
                     //Uncomment to use Postgre Storage
                     // .UsePostgreSqlStorage(GetConnectionString(PostgresDbHost, "hangfire", "postgres", "test"),
                     //     new PostgreSqlStorageOptions
                     //     {
                     //         InvisibilityTimeout = TimeSpan.FromHours(2)
                     //     })
+                    // .UseTagsWithPostgreSql()
                     .UseSimpleAssemblyNameTypeSerializer()
                     .UseConsole()
                     ;
@@ -155,8 +161,13 @@ namespace DSR_HangfireExample
                 Cron.Never);
             
             recurringJobManager.AddOrUpdate<ProgressJobs>(
-                "ArrayProcessingJob",
+                "ArrayProcessingJob-10",
                 x => x.ArrayProcessingJob(10),
+                "*/2 * * * *");
+
+            recurringJobManager.AddOrUpdate<ProgressJobs>(
+                "ArrayProcessingJob-10000",
+                x => x.ArrayProcessingJob(10_000),
                 "*/2 * * * *");
 
             recurringJobManager.RemoveOutdatedJobs();
