@@ -87,8 +87,16 @@ namespace DSR_HangfireExample
                 GlobalJobFilters.Filters.Remove(retryFilter.Instance);
             });
             
-            services.AddHangfireServer((provider, options) =>
+            services.AddHangfireServer(options =>
             {
+                options.Queues = new[] {"default"};
+                options.WorkerCount = 1;
+            });
+            
+            services.AddHangfireServer(options =>
+            {
+                options.Queues = new[] {"10-critical", "20-normal"};
+                options.WorkerCount = 2;
             });
 
             services.AddSingleton<EmailService>();

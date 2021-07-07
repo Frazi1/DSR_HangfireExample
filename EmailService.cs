@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.Extensions.Logging;
 
@@ -10,8 +11,10 @@ namespace DSR_HangfireExample
         public EmailService(ILogger<EmailService> logger) => _logger = logger;
 
         [JobDisplayName("Send email to {0}")]
-        public void SendEmail(string to, string body)
+        public async Task SendEmail(string to, string body)
         {
+            _logger.LogDebug("Waiting before sending email");
+            await Task.Delay(TimeSpan.FromSeconds(5));
             _logger.LogInformation("Email sent to {EmailServiceTo}:{EmailServiceBody}",
                 to, body);
         }

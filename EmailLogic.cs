@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Hangfire;
 
 namespace DSR_HangfireExample
@@ -13,9 +14,9 @@ namespace DSR_HangfireExample
 
         [JobDisplayName("Send email to client {0}")]
         [JobExpiration(365)]
-        public void SendClientEmail(int clientId)
+        public async Task SendClientEmail(int clientId)
         {
-            _service.SendEmail($"client_{clientId}@some.com",
+            await _service.SendEmail($"client_{clientId}@some.com",
                 $"Dear Client {clientId}," +
                 "Thanks for using our service!");
         }
