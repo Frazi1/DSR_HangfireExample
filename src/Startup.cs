@@ -66,22 +66,31 @@ namespace DSR_HangfireExample
             services.AddHangfireConsoleExtensions();
             services.AddHangfire(configuration =>
             {
-                configuration
-                    .UseSqlServerStorage(() =>
-                            new Microsoft.Data.SqlClient.SqlConnection(Configuration.GetConnectionString("SqlServer")),
-                        new SqlServerStorageOptions())
-                    .UseTagsWithSql()
+                switch (Configuration["HangfireStorageType"])
+                {
+                    case "SqlServer":
+                        configuration
+                            .UseSqlServerStorage(() =>
+                                    new Microsoft.Data.SqlClient.SqlConnection(Configuration.GetConnectionString("SqlServer")),
+                                new SqlServerStorageOptions())
+                            .UseTagsWithSql();
+                        break;
+                    case "Postgre":
+                        configuration
+                            .UsePostgreSqlStorage(Configuration.GetConnectionString("Postgre"),
+                                new PostgreSqlStorageOptions
+                                {
+                                    InvisibilityTimeout = TimeSpan.FromHours(2)
+                                })
+                            .UseTagsWithPostgreSql();
+                        break;
+                    default:
+                        throw new NotSupportedException($"StorageType {Configuration["HangfireStorageType"]} is not supported");
+                }
 
-                    // Uncomment to use Postgre Storage
-                    // .UsePostgreSqlStorage(Configuration.GetConnectionString("Postgre"),
-                    //     new PostgreSqlStorageOptions
-                    //     {
-                    //         InvisibilityTimeout = TimeSpan.FromHours(2)
-                    //     })
-                    // .UseTagsWithPostgreSql()
+                configuration
                     .UseSimpleAssemblyNameTypeSerializer()
-                    .UseConsole()
-                    ;
+                    .UseConsole();
 
                 var retryFilter = GlobalJobFilters.Filters
                     .First(x => x.Instance is AutomaticRetryAttribute);
